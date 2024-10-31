@@ -1,0 +1,31 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('select.status-select').change(function() {
+            var projectId = $(this).data('project-id');
+            var newStatus = $(this).val();
+            $.ajax({
+                url: '/update-status/' + projectId + '/',
+                method: 'POST',
+                data: {
+                    'status': newStatus,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token
+                },
+                success: function(response) {
+                    alert('Status updated to ' + response.new_status);
+                },
+                error: function(response) {
+                    alert('Error updating status');
+                }
+            });
+        });
+    });
+</script>
+
+<td>
+    <select class="status-select" data-project-id="{{ project.id }}">
+        <option value="Pending" {% if project.status == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="Approved" {% if project.status == 'Approved' %}selected{% endif %}>Approved</option>
+        <option value="Declined" {% if project.status == 'Declined' %}selected{% endif %}>Declined</option>
+    </select>
+</td>
