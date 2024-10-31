@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+path('accounts/', include('django.contrib.auth.urls')),
+path('accounts/', include('allauth.urls')),<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Login</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
         .form-group {
@@ -25,12 +26,12 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="text-center">Sign Up</h2>
+                        <h2 class="text-center">Login</h2>
                     </div>
                     <div class="card-body">
                         <form method="post" novalidate>
                             {% csrf_token %}
-
+                            
                             {% for field in form %}
                             <div class="form-group">
                                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -43,11 +44,12 @@
                             {% endfor %}
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                                <button type="submit" class="btn btn-primary btn-block">Login</button>
                             </div>
                         </form>
                         <div class="text-center">
-                            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                            <p>Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+                            <p><a href="{% url 'password_reset' %}" class="text-muted">Forgot password?</a></p>
                         </div>
                     </div>
                 </div>
@@ -58,7 +60,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+    
     <script>
         // Add Bootstrap classes to form fields
         document.addEventListener('DOMContentLoaded', function() {

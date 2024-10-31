@@ -9,18 +9,82 @@
 <body>
     <div class="container">
         <h2>Update Material</h2>
-        <form method="post">
+        <!-- Added enctype for file upload -->
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" class="form-control" id="name" name="name" value="{{ material.name }}">
+                <input type="text" class="form-control" id="name" name="name" value="{{ material.name }}" required>
             </div>
             <div class="form-group">
                 <label for="description">Description:</label>
-                <textarea class="form-control" id="description" name="description">{{ material.description }}</textarea>
+                <textarea class="form-control" id="description" name="description" required>{{ material.description }}</textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Update</button>
+            <!-- New fields -->
+            <div class="form-group">
+                <label for="unit">Unit:</label>
+                <input type="text" class="form-control" id="unit" name="unit" value="{{ material.unit }}" required>
+            </div>
+            <div class="form-group">
+                <label for="price_per_unit">Price per Unit:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="number" step="0.01" class="form-control" id="price_per_unit" name="price_per_unit" value="{{ material.price_per_unit }}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="stock_quantity">Stock Quantity:</label>
+                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" value="{{ material.stock_quantity }}" required>
+            </div>
+            <!-- Image upload section -->
+            <div class="form-group">
+                {% if material.image %}
+                <div class="mb-3">
+                    <label>Current Image:</label>
+                    <div class="current-image">
+                        <img src="{{ material.image.url }}" alt="{{ material.name }}" class="img-thumbnail" style="max-width: 200px;">
+                    </div>
+                </div>
+                {% endif %}
+                <label for="image">Update Image:</label>
+                <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+                <small class="form-text text-muted">Leave empty to keep current image. Accepted formats: JPG, PNG, GIF</small>
+            </div>
+            <!-- Buttons -->
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Update Material</button>
+                <a href="{% url 'materials_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
         </form>
     </div>
+
+    <!-- Optional: Add some custom styles -->
+    <style>
+        .container {
+            max-width: 800px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .current-image {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn {
+            margin-right: 10px;
+        }
+    </style>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

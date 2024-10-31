@@ -1,3 +1,4 @@
+from django.core.checks import messages
 from django.shortcuts import render, redirect
 from .models import Project, Material
 from .forms import QuoteRequestForm
@@ -5,21 +6,16 @@ from django.http import JsonResponse
 from .forms import LoginForm
 from django.contrib.auth import authenticate, login
 from .forms import SignUpForm
-from .models import QuoteRequest
-from django.contrib import messages
+from django.http import HttpResponseForbidden
+
 
 def home(request):
     context = {}
     if request.user.is_authenticated:
         # Add user-specific data to the context if needed
         context['user_id'] = request.user.id
-    else:
-        # Handle the case for anonymous users
-        context['user_id'] = None
-
-    # Add any other context data you need
-
     return render(request, 'home.html', context)
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -36,7 +32,12 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
 
+
 def request_quote(request):
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden("You must be logged in to access this page.")
+
+    # Rest of your view logic here
     if request.method == 'POST':
         form = QuoteRequestForm(request.POST)
         if form.is_valid():
@@ -44,7 +45,7 @@ def request_quote(request):
             quote_request.user = request.user
             quote_request.save()
             messages.success(request, 'Your quote request has been submitted successfully!')
-            return redirect('quote_list')  # or wherever you want to redirect after submission
+            return redirect('quote_list')
     else:
         form = QuoteRequestForm()
 
@@ -90,7 +91,19 @@ def create_material(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         description = request.POST.get('description')
-        Material.objects.create(name=name, description=description)
+        unit = request.POST.get('unit')
+        price_per_unit = request.POST.get('price_per_unit')
+        stock_quantity = request.POST.get('stock_quantity')
+        image = request.FILES.get('image')
+
+        Material.objects.create(
+            name=name,
+            description=description,
+            unit=unit,
+            price_per_unit=price_per_unit,
+            stock_quantity=stock_quantity,
+            image=image
+        )
         return redirect('materials_list')
     return render(request, 'create_material.html')
 
@@ -98,10 +111,16 @@ def create_material(request):
 def update_material(request, material_id):
     material = Material.objects.get(id=material_id)
     if request.method == 'POST':
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        material.name = name
-        material.description = description
+        material.name = request.POST.get('name')
+        material.description = request.POST.get('description')
+        material.unit = request.POST.get('unit')
+        material.price_per_unit = request.POST.get('price_per_unit')
+        material.stock_quantity = request.POST.get('stock_quantity')
+
+        new_image = request.FILES.get('image')
+        if new_image:
+            material.image = new_image
+
         material.save()
         return redirect('materials_list')
     return render(request, 'update_material.html', {'material': material})
